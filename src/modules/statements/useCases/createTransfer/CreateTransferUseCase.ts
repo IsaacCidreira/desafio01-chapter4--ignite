@@ -1,0 +1,3 @@
+class CreateTransferUseCase {}
+
+export { CreateTransferUseCase };
