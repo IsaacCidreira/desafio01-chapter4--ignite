@@ -22,7 +22,6 @@ export class CreateStatementController {
       type = splittedPath[splittedPath.length - 1] as OperationType;
     } else {
       type = splittedPath[splittedPath.length - 2] as OperationType;
-      console.log(type);
     }
     const createStatement = container.resolve(CreateStatementUseCase);
 

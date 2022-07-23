@@ -18,4 +18,10 @@ export namespace CreateStatementError {
       super("Sender not found", 404);
     }
   }
+
+  export class SenderEqualDestination extends AppError {
+    constructor() {
+      super("Cannot transfer to the same account!", 404);
+    }
+  }
 }

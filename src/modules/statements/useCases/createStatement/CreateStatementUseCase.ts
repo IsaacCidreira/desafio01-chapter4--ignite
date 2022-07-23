@@ -30,6 +30,10 @@ export class CreateStatementUseCase {
       throw new CreateStatementError.UserNotFound();
     }
 
+    if (!sender) {
+      throw new CreateStatementError.SenderNotFound();
+    }
+
     if (type === "withdraw") {
       const { balance } = await this.statementsRepository.getUserBalance({
         user_id,
@@ -40,9 +44,23 @@ export class CreateStatementUseCase {
       }
     }
 
-    // if (type === "transfer" && !sender) {
-    //   throw new CreateStatementError.SenderNotFound();
-    // }
+    if (type === "transfer" && !sender) {
+      throw new CreateStatementError.SenderNotFound();
+    }
+
+    if (type === "transfer" && user_id === sender_id) {
+      throw new CreateStatementError.SenderEqualDestination();
+    }
+
+    if (type === "transfer") {
+      const { balance } = await this.statementsRepository.getUserBalance({
+        user_id,
+      });
+
+      if (balance < amount) {
+        throw new CreateStatementError.InsufficientFunds();
+      }
+    }
 
     const statementOperation = await this.statementsRepository.create({
       user_id,

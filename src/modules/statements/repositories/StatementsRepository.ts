@@ -26,10 +26,10 @@ export class StatementsRepository implements IStatementsRepository {
         amount,
         description,
         type,
-        sender_id: sender_id,
+        sender_id: user_id,
       });
 
-      await this.repository.save(senderStatement);
+      return await this.repository.save(senderStatement);
     }
     const statement = this.repository.create({
       user_id,
@@ -58,15 +58,20 @@ export class StatementsRepository implements IStatementsRepository {
     { balance: number } | { balance: number; statement: Statement[] }
   > {
     const statement = await this.repository.find({
-      where: { user_id },
+      where: [{ user_id }, { sender_id: user_id }],
     });
 
-    console.log(statement);
     const balance = statement.reduce((acc, operation) => {
       if (operation.type === "deposit") {
         return Number(acc) + Number(operation.amount);
+      } else if (operation.type === "transfer") {
+        if (operation.user_id !== user_id) {
+          return Number(acc) - Number(operation.amount);
+        } else {
+          return Number(acc) + Number(operation.amount);
+        }
       } else {
-        return acc - operation.amount;
+        return Number(acc) - Number(operation.amount);
       }
     }, 0);
 
